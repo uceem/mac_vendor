@@ -1,0 +1,28 @@
+= mac_vendor
+
+* {Homepage}[https://github.com/uceem/mac_vendor.git]
+* {Email}[mailto:doug at uceem.com]
+
+== Description
+
+Given a MAC address, lookup the vendor of the interface.
+
+Inspired by the Net-MAC-Vendor perl package.
+
+== Features
+
+== Examples
+
+  require 'mac_vendor'
+
+== Requirements
+
+== Install
+
+  $ gem install mac_vendor
+
+== Copyright
+
+Copyright (c) 2013 Uceem Idaho, Inc.
+
+See LICENSE.txt for details.
