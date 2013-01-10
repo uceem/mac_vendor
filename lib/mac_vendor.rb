@@ -7,6 +7,7 @@ class MacVendor
   def initialize(opts={})
     @prefix_cache = {}
     @preloaded = false
+    @network_hits = 0 if opts[:enable_network_tracking]
     preload_cache_via_local_data if opts[:use_local]
   end
   
@@ -26,9 +27,13 @@ class MacVendor
     "#{p[0..1]}-#{p[2..3]}-#{p[4..5]}"
   end
 
+  def get_url(url)
+    @network_hits +=1 unless @network_hits.nil?
+    Net::HTTP.get URI(url)
+  end
+
   def fetch_single(prefix)
-    #single_txt = Net::HTTP.get URI(OUI_SINGLE_URL + hyphen_prefix(prefix))
-    single_txt = File.open('/tmp/search.out').read
+    single_txt = get_url OUI_SINGLE_URL + hyphen_prefix(prefix)
     
     if single_txt =~ /The public OUI listing contains no match for the query/
       return @prefix_cache[prefix] = nil
@@ -45,22 +50,25 @@ class MacVendor
     nil
   end
   
-  # todo -- test by preloading one instance and not another, and then spot checking
-  # todo -- write tests
-  
   def preload_cache_via_string(oui_txt)
-    oui_txt = Net::HTTP.get URI(OUI_FULL_URL)
-
     # First entry is a header
     entries = oui_txt.split("\n\n")
 
-    entries[1..-1].each.strip do |entry|
-      base16_fields = entry.split("\n")[1].split("\t")
+    entries[1..-1].each do |entry|
+      base16_fields = entry.strip.split("\n")[1].split("\t")
       mac_prefix = base16_fields[0][0..5]
       company_name = base16_fields[-1]
-      company_address = entry.gsub("\t",'').split("\n")[2..-1]
+      company_address = entry.strip.gsub("\t",'').split("\n")[2..-1]
 
-      raise "MAC prefix key collision" unless @prefix_cache[mac_prefix].nil?
+      # This actually happens three times in the current dataset!
+      unless @prefix_cache[mac_prefix].nil?
+        #puts "MAC PREFIX COLLISION: #{mac_prefix}"
+        #puts "CURRENT = #{@prefix_cache[mac_prefix].inspect}"
+        #puts "NEW = #{{:name => company_name, :address => company_address}.inspect}"
+        #raise "MAC prefix key collision: #{mac_prefix}"
+        next
+      end
+    
       @prefix_cache[mac_prefix] = {:name => company_name, :address => company_address}
     end
     @preloaded = true
@@ -72,7 +80,11 @@ class MacVendor
   end
   
   def preload_cache
-    preload_cache_via_string Net::HTTP.get URI(OUI_FULL_URL)
+    preload_cache_via_string get_url(OUI_FULL_URL)
+  end
+  
+  def network_hits
+    @network_hits
   end
 end
 
