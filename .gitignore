@@ -17,4 +17,8 @@ tmp
 _yardoc
 doc/
 
+# Ignore Emacs backups everywhere.
 *~
+
+# Ignore textmate projects
+*.tmproj
