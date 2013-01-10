@@ -4,16 +4,16 @@ class MacVendor
   OUI_FULL_URL = 'http://standards.ieee.org/develop/regauth/oui/oui.txt'
   OUI_SINGLE_URL = 'http://standards.ieee.org/cgi-bin/ouisearch?'  # ex: http://standards.ieee.org/cgi-bin/ouisearch?00-11-22
   
-  def initialize
+  def initialize(opts={})
     @prefix_cache = {}
     @preloaded = false
+    preload_cache_via_local_data if opts[:use_local]
   end
   
   def lookup(mac)
     prefix = self.normalize_prefix mac
-    return @prefix_cache if @preloaded
-    @prefix_cache[prefix] or @prefix_cache[prefix] = fetch_single(prefix)
-    # todo -- missing case where we found a nil witha  single lookup; we're re-looking up now.
+    return @prefix_cache[prefix] if @preloaded or @prefix_cache.has_key?(prefix)
+    @prefix_cache[prefix] = fetch_single(prefix)
   end
 
   # Attempts to turn anything MAC-like into the first six digits, e.g.: AABBCC
@@ -30,9 +30,9 @@ class MacVendor
     #single_txt = Net::HTTP.get URI(OUI_SINGLE_URL + hyphen_prefix(prefix))
     single_txt = File.open('/tmp/search.out').read
     
-    return nil if single_txt =~ /The public OUI listing contains no match for the query/
-    
-    puts single_txt
+    if single_txt =~ /The public OUI listing contains no match for the query/
+      return @prefix_cache[prefix] = nil
+    end
     
     if single_txt.gsub(/[\r\n]/,"\t") =~ /([0-9A-F]+)\s+\(base 16\)(.*?)pre/
       mac_prefix = normalize_prefix $1
@@ -48,7 +48,7 @@ class MacVendor
   # todo -- test by preloading one instance and not another, and then spot checking
   # todo -- write tests
   
-  def preload_cache
+  def preload_cache_via_string(oui_txt)
     oui_txt = Net::HTTP.get URI(OUI_FULL_URL)
 
     # First entry is a header
@@ -64,6 +64,15 @@ class MacVendor
       @prefix_cache[mac_prefix] = {:name => company_name, :address => company_address}
     end
     @preloaded = true
+  end
+
+  def preload_cache_via_local_data
+    local_path = File.expand_path(File.dirname(__FILE__) + "/../data/oui.txt.gz")
+    preload_cache_via_string Zlib::GzipReader.open(local_path).read
+  end
+  
+  def preload_cache
+    preload_cache_via_string Net::HTTP.get URI(OUI_FULL_URL)
   end
 end
 

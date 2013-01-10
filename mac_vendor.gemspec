@@ -7,6 +7,10 @@ Gem::Specification.new do |s|
   s.description = "Given a MAC address, lookup the vendor of the interface."
   s.authors     = ["Doug Wiegley"]
   s.email       = 'doug@uceem.com'
-  s.files       = ["lib/mac_vendor.rb"]
+
+  s.files         = `git ls-files`.split($/)
+  s.test_files    = gem.files.grep(%r{^(test|spec|features)/})
+  s.require_paths = ['lib']
+  
   s.homepage    = 'https://github.com/uceem/mac_vendor.git'
 end
