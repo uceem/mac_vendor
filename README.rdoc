@@ -16,6 +16,17 @@ Inspired by the Net-MAC-Vendor perl package.
   v = MacVendor.new
   v.lookup '00-11-22-33-44-55'
 
+To preload all data up front:
+
+  v = MacVendor.new
+  v.preload_cache
+  v.lookup '00:ff:bb:11:22:33'
+
+To use a local copy of the data, as of the gem release date:
+
+  v = MacVendor.new :use_local => true
+  v.lookup 'aabbccddeeff'
+
 == Install
 
   $ gem install mac_vendor
