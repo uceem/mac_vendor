@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email       = 'doug@uceem.com'
 
   s.files         = `git ls-files`.split($/)
-  s.test_files    = gem.files.grep(%r{^(test|spec|features)/})
+  s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ['lib']
   
   s.homepage    = 'https://github.com/uceem/mac_vendor.git'
