@@ -9,13 +9,12 @@ Given a MAC address, lookup the vendor of the interface.
 
 Inspired by the Net-MAC-Vendor perl package.
 
-== Features
-
 == Examples
 
   require 'mac_vendor'
 
-== Requirements
+  v = MacVendor.new
+  v.lookup '00-11-22-33-44-55'
 
 == Install
 
