@@ -43,7 +43,7 @@ class MacVendor
       mac_prefix = normalize_prefix $1
       lines = $2.strip.split("\t")
       company_name = lines[0]
-      company_address = lines[1..-2].reject {|x| x == ''}
+      company_address = lines[1..-2].reject {|x| x.strip == ''}
 
       return @prefix_cache[prefix] = {:name => company_name, :address => company_address}
     end
@@ -58,7 +58,7 @@ class MacVendor
       base16_fields = entry.strip.split("\n")[1].split("\t")
       mac_prefix = base16_fields[0].strip[0..5]
       company_name = base16_fields[-1]
-      company_address = entry.strip.gsub("\t",'').split("\n")[2..-1]
+      company_address = entry.strip.gsub("\t",'').split("\n")[2..-1].map {|x| x.strip}
 
       # This actually happens three times in the current dataset!
       unless @prefix_cache[mac_prefix].nil?
