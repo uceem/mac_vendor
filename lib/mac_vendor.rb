@@ -56,7 +56,7 @@ class MacVendor
 
     entries[1..-1].each do |entry|
       base16_fields = entry.strip.split("\n")[1].split("\t")
-      mac_prefix = base16_fields[0][0..5]
+      mac_prefix = base16_fields[0].strip[0..5]
       company_name = base16_fields[-1]
       company_address = entry.strip.gsub("\t",'').split("\n")[2..-1]
 
