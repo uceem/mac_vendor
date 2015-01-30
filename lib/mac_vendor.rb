@@ -1,7 +1,7 @@
 require 'net/http'
 
 class MacVendor
-  OUI_FULL_URL = 'http://standards.ieee.org/develop/regauth/oui/oui.txt'
+  OUI_FULL_URL = 'http://www.ieee.org/netstorage/standards/oui.txt'
   OUI_SINGLE_URL = 'http://standards.ieee.org/cgi-bin/ouisearch?'  # ex: http://standards.ieee.org/cgi-bin/ouisearch?00-11-22
   
   def initialize(opts={})
@@ -52,7 +52,7 @@ class MacVendor
   
   def preload_cache_via_string(oui_txt)
     # First entry is a header
-    entries = oui_txt.split("\n\n")
+    entries = oui_txt.gsub(/\r\n/, "\n").split(/ *\n *\n/)
 
     entries[1..-1].each do |entry|
       base16_fields = entry.strip.split("\n")[1].split("\t")
