@@ -1,7 +1,7 @@
 require 'net/http'
 
 class MacVendor
-  OUI_FULL_URL = 'http://www.ieee.org/netstorage/standards/oui.txt'
+  OUI_FULL_URL = 'http://standards-oui.ieee.org/oui.txt'
   OUI_SINGLE_URL = 'http://standards.ieee.org/cgi-bin/ouisearch?'  # ex: http://standards.ieee.org/cgi-bin/ouisearch?00-11-22
   
   def initialize(opts={})
